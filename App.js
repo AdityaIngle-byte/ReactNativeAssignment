@@ -5,6 +5,7 @@ const App = () => {
 
   const [image, setImageurl] = useState(null);
   const [change, setChange] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getImage();
@@ -18,6 +19,7 @@ const App = () => {
   }
 
   const getImage = () => {
+    setLoading(true);
     fetch('https://reactnativeassignment.000webhostapp.com/view.php', {
       method: 'GET',
       headers: {
@@ -27,22 +29,32 @@ const App = () => {
     })
       .then(response => response.json())
       .then(data => {
+        setLoading(false);
         console.log(data.data);
         let imagePath = `data:image/jpeg;base64,${data.data}`
         setImageurl(imagePath);
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error);
       })
   }
 
-  let dynamicContent = <Text>No Image</Text>;
+  let dynamicContent = '';
   if (image) {
     dynamicContent = (
       <Image
         style={styles.logo}
         source={{ uri: image }}
       />
+    )
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.noContent]}>
+        <ActivityIndicator size={'large'} color={'blue'} animating={true} />
+      </View>
     )
   }
 
